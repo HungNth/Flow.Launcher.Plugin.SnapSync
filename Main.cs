@@ -121,11 +121,11 @@ public class Main : IAsyncPlugin, ISettingProvider
             var report = await _syncEngine.SynchronizeAsync(profile).ConfigureAwait(false);
             var summary = $"Copied: {report.CopiedCount}, Unchanged: {report.UnchangedCount}, Failed: {report.FailedCount}";
             var title = report.IsSuccess ? $"SnapSync: {profile.Name} Completed" : $"SnapSync: {profile.Name} Completed with errors";
-            _context.API.ShowMsg(title, summary, "Images\\app.png");
+            _context.API.ShowMsg(title, summary);
         }
         catch (Exception ex)
         {
-            _context.API.ShowMsg($"SnapSync: {profile.Name} Failed", ex.Message, "Images\\app.png");
+            _context.API.ShowMsg($"SnapSync: {profile.Name} Failed", ex.Message);
         }
     }
 }
