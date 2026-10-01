@@ -1,0 +1,46 @@
+{
+  "skill_name": "flow-launcher-csharp-plugin",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a Flow Launcher C# plugin named RepoSearch that searches my GitHub repositories by name using the GitHub API. Action keyword is gh. As I type it should filter results asynchronously, and pressing Enter opens the repo URL in the browser. Add a setting for the GitHub personal access token, and a second setting for maximum number of results shown.",
+      "expected_output": "A C# Flow Launcher plugin project: plugin.json with Language csharp and correct ExecuteFileName, csproj referencing Flow.Launcher.Plugin at a current version, an IAsyncPlugin class honoring CancellationToken, settings via LoadSettingJsonStorage (not SettingsTemplate.yaml), an icon, and build/verification steps.",
+      "files": [],
+      "assertions": [
+        "plugin.json has Language \"csharp\" and ExecuteFileName matching the built DLL name",
+        "A C# class implements IAsyncPlugin with QueryAsync(Query, CancellationToken) honoring the token",
+        "Settings use LoadSettingJsonStorage<T> or ISettingProvider; NO SettingsTemplate.yaml file exists",
+        "csproj references Flow.Launcher.Plugin at a recent version with matching modern TargetFramework (not 2.0, not net7.0 with 5.x)",
+        "Every Result has Title and IcoPath; icon file path referenced consistently",
+        "Enter action opens the repo URL (OpenUrl or Process.Start) and returns true"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My Flow Launcher C# plugin freezes Flow whenever I type quickly - I think the query does a web request before returning results. Here is the project (Main.cs with a sync IPlugin Query doing HttpWebRequest, plugin.json, csproj pinned to Flow.Launcher.Plugin 2.0). Fix the freeze, and also Flow complains my plugin.json Version is 1.0 but the store shows old releases after updates. Fix both issues while keeping the project structure.",
+      "expected_output": "A focused bug fix: converts the plugin to IAsyncPlugin with CancellationToken-aware QueryAsync (no blocking I/O in query path), bumps the csproj package reference to a current Flow.Launcher.Plugin version with matching TargetFramework, sets Version to semver x.y.z, preserves existing structure and plugin ID, and documents deploy/restart verification steps.",
+      "files": [],
+      "assertions": [
+        "Fixed plugin implements IAsyncPlugin (QueryAsync) with no blocking network I/O in the query path",
+        "QueryAsync honors the CancellationToken",
+        "csproj Flow.Launcher.Plugin package reference updated to a recent version with matching TargetFramework",
+        "plugin.json Version is 3-part semver",
+        "Original project structure preserved and plugin ID unchanged",
+        "Notes explain deploy/restart verification steps"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Prepare my Flow Launcher C# plugin (RepoSearch) for release. Create a GitHub Actions workflow that publishes the plugin with dotnet, zips the publish output, reads the version from plugin.json for the release tag, and create the PluginsManifest store entry. I don't have the release URLs yet since nothing is published.",
+      "expected_output": "A windows-latest GitHub Actions workflow using setup-dotnet, dotnet publish -r win-x64 --no-self-contained, Compress-Archive of the publish output, version read from plugin.json, softprops/action-gh-release publishing the zip; plus a PluginsManifest entry JSON with clearly-marked placeholder UrlDownload/UrlSourceCode/IcoPath and an explicit list of which fields need real values once the release exists.",
+      "files": [],
+      "assertions": [
+        "Workflow runs on windows-latest and uses actions/setup-dotnet with a .NET version matching the TFM",
+        "Workflow runs dotnet publish with -r win-x64 --no-self-contained and zips the publish output",
+        "Release tag is read from plugin.json Version",
+        "Manifest entry contains ID, Name, Description, Author, Version, Language csharp, Website, UrlDownload, UrlSourceCode, IcoPath",
+        "All unresolvable URL fields are clearly marked placeholders and listed in notes as needing real values"
+      ]
+    }
+  ]
+}
