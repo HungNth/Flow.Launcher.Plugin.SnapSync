@@ -87,7 +87,7 @@ public class Main : IAsyncPlugin, ISettingProvider
                 SubTitle = subTitle,
                 IcoPath = "Images\\app.png",
                 Score = score,
-                Action = _ =>
+                AsyncAction = async actionContext =>
                 {
                     if (!profile.Enabled)
                     {
@@ -95,8 +95,7 @@ public class Main : IAsyncPlugin, ISettingProvider
                         return true;
                     }
 
-                    // Explicit Enter execution
-                    _ = SynchronizeProfileAsync(profile);
+                    await SynchronizeProfileAsync(profile);
                     return true;
                 }
             });

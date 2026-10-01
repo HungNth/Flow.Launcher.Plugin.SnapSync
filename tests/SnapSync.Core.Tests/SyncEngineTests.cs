@@ -293,6 +293,35 @@ public sealed class SyncEngineTests : IDisposable
     }
 
     [Fact]
+    public async Task SynchronizeAsync_WhenDestinationLocked_PreservesOriginalAndRemovesStagedFile()
+    {
+        var sourcePath = Path.Combine(_testRoot, "source.txt");
+        var destinationDirectory = Path.Combine(_testRoot, "destination");
+        Directory.CreateDirectory(destinationDirectory);
+        var destinationPath = Path.Combine(destinationDirectory, "target.txt");
+        byte[] original = [1, 2, 3];
+        await File.WriteAllBytesAsync(sourcePath, [4, 5, 6, 7]);
+        await File.WriteAllBytesAsync(destinationPath, original);
+        var profile = new SyncProfile
+        {
+            Name = "Locked target",
+            Items = [new SyncItem { Name = "File", Source = sourcePath, Destinations = [destinationPath] }]
+        };
+
+        SyncReport report;
+        using (var lockedDestination = new FileStream(destinationPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            report = await _engine.SynchronizeAsync(profile);
+        }
+
+        Assert.Equal(0, report.CopiedCount);
+        Assert.Equal(1, report.FailedCount);
+        Assert.Equal(EntryOutcome.Failed, Assert.Single(report.Entries).Outcome);
+        Assert.Equal(original, await File.ReadAllBytesAsync(destinationPath));
+        Assert.Empty(Directory.EnumerateFiles(destinationDirectory, ".target.txt.tmp.*"));
+    }
+
+    [Fact]
     public async Task SynchronizeAsync_WhenSourceDoesNotExist_ReportsFailureAndLeavesDestinationIntact()
     {
         var sourcePath = Path.Combine(_testRoot, "missing_source.txt");
