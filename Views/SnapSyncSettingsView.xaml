@@ -1,0 +1,83 @@
+<UserControl x:Class="Flow.Launcher.Plugin.SnapSync.Views.SnapSyncSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Flow.Launcher.Plugin.SnapSync.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:SnapSyncSettingsViewModel}"
+             d:DesignHeight="450" d:DesignWidth="700">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="SnapSync Settings" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,12,0">
+                <TextBlock Text="Sync Profile" FontWeight="Bold" Margin="0,0,0,6"/>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Profile Name:" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" Padding="4"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="0,4"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ProfileEnabled}" VerticalAlignment="Center" Margin="0,4"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ProfileDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" Padding="4"/>
+                </Grid>
+
+                <Separator Margin="0,8,0,12"/>
+
+                <TextBlock Text="File Sync Item" FontWeight="Bold" Margin="0,0,0,6"/>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Item Name:" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding ItemName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" Padding="4"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="0,4"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding ItemEnabled}" VerticalAlignment="Center" Margin="0,4"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Source File:" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,8,4" Padding="4"/>
+                    <Button Grid.Row="2" Grid.Column="2" Content="Browse..." Command="{Binding BrowseSourceFileCommand}" Padding="12,4" Margin="0,4"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Destination File:" VerticalAlignment="Center" Margin="0,4"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,8,4" Padding="4"/>
+                    <Button Grid.Row="3" Grid.Column="2" Content="Browse..." Command="{Binding BrowseDestinationFileCommand}" Padding="12,4" Margin="0,4"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="#33888888" Padding="0,12,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Margin="0,0,16,0" Foreground="{Binding StatusColor}"/>
+                <Button Content="Save" Command="{Binding SaveCommand}" Padding="20,6" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

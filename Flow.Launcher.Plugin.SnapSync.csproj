@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="src\SnapSync.Core\SnapSync.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="plugin.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
