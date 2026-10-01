@@ -48,6 +48,10 @@ _Avoid_: Skipped entry
 A filesystem entry that redirects path traversal to another named location, such as a symbolic link, junction, or mount point. Cloud-backed placeholder files are not Navigation Links.
 _Avoid_: Reparse point, linked entry
 
+**Cloud Placeholder**:
+A cloud-backed filesystem entry whose content may be locally available or retrieved on demand. A Cloud Placeholder is not a Navigation Link merely because it carries reparse-point metadata.
+_Avoid_: Linked entry, symbolic link
+
 **Skipped Entry**:
 A Source entry intentionally left unprocessed by a filesystem safety rule, such as the rule against following Navigation Links.
 _Avoid_: Excluded entry

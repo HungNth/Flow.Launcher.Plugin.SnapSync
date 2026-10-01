@@ -1,0 +1,3 @@
+# Reject overlapping reads and writes before operation writes
+
+SnapSync rejects identical Source/Destination paths, containment in either direction, duplicate Destinations, overlapping enabled write areas, and enabled cross-item read/write overlap after expansion and normalization. Structural preflight covers the entire selected operation before any write, avoiding recursion and execution-order-dependent output rather than attempting ordering or compatibility rules; filesystem unavailability remains a runtime outcome and a save-time warning. Disabled objects must remain internally valid, but conflicts between separate objects apply only to enabled participants.

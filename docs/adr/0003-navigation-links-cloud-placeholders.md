@@ -1,0 +1,3 @@
+# Distinguish Navigation Links from Cloud Placeholders
+
+Windows Cloud Files uses reparse-point metadata for cloud placeholders as well as for navigation links; the evidence and primary-source links are recorded in [the cloud-files research](../../.scratch/on-demand-sync/research/windows-reparse-cloud-files.md). SnapSync therefore rejects configured paths traversing symbolic links, junctions, or mount points and skips nested Navigation Links, but accepts Cloud Placeholders rather than treating FileAttributes.ReparsePoint alone as a link classifier. Explicit Preview or synchronization may hydrate content through ordinary reads when comparison or copying needs bytes; hydration errors remain reportable entry failures, with no provider-specific APIs.
