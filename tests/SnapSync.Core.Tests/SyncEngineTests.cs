@@ -350,7 +350,7 @@ public sealed class SyncEngineTests : IDisposable
         Assert.Equal(0, report.CopiedCount);
         Assert.Equal(0, report.UnchangedCount);
         Assert.Equal(1, report.FailedCount);
-        Assert.Equal(EntryOutcome.Failed, report.Entries[0].Outcome);
+        Assert.Equal(EntryOutcome.MissingSource, report.Entries[0].Outcome);
         Assert.NotNull(report.Entries[0].ErrorMessage);
         Assert.Equal("Original intact destination", await File.ReadAllTextAsync(destPath));
     }

@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:core="clr-namespace:SnapSync.Core;assembly=SnapSync.Core"
              xmlns:vm="clr-namespace:Flow.Launcher.Plugin.SnapSync.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vm:SnapSyncSettingsViewModel}"
-             d:DesignHeight="450" d:DesignWidth="700">
+             d:DesignHeight="650" d:DesignWidth="900">
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,70 +15,225 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="SnapSync Settings" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+        <TextBlock Text="SnapSync Profile Catalog" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,0,12,0">
-                <TextBlock Text="Sync Profile" FontWeight="Bold" Margin="0,0,0,6"/>
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel: Profiles List & Management -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Sync Profiles" FontWeight="Bold" Margin="0,0,0,6"/>
+
+                <ListBox Grid.Row="1" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}" Margin="0,0,0,8">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <CheckBox IsChecked="{Binding Enabled}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="Medium"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Profile Action Buttons -->
+                <WrapPanel Grid.Row="2" Margin="0,0,0,4">
+                    <Button Content="Add" Command="{Binding AddProfileCommand}" Padding="8,4" Margin="0,0,4,4"/>
+                    <Button Content="Duplicate" Command="{Binding DuplicateProfileCommand}" Padding="8,4" Margin="0,0,4,4"/>
+                    <Button Content="Delete" Command="{Binding DeleteProfileCommand}" Padding="8,4" Margin="0,0,4,4"/>
+                    <Button Content="▲" ToolTip="Move Up" Command="{Binding MoveProfileUpCommand}" Padding="8,4" Margin="0,0,4,4"/>
+                    <Button Content="▼" ToolTip="Move Down" Command="{Binding MoveProfileDownCommand}" Padding="8,4" Margin="0,0,4,4"/>
+                </WrapPanel>
+            </Grid>
+
+            <!-- Splitter / Separator -->
+            <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="#22888888"/>
+
+            <!-- Right Panel: Profile Details, Items & Destinations -->
+            <Grid Grid.Column="2" DataContext="{Binding SelectedProfile}">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Profile Properties -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                    <TextBlock Text="Profile Properties" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:" VerticalAlignment="Center" Margin="0,3"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,3" Padding="4"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="0,3"/>
+                        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding Enabled}" VerticalAlignment="Center" Margin="0,3"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="0,3"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Margin="0,3" Padding="4"/>
+                    </Grid>
+                </StackPanel>
+
+                <Separator Grid.Row="1" Margin="0,0,0,8"/>
+
+                <!-- Items & Destinations Section -->
+                <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="95"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Profile Name:" VerticalAlignment="Center" Margin="0,4"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" Padding="4"/>
+                    <TextBlock Grid.Row="0" Text="Sync Items" FontWeight="Bold" Margin="0,0,0,4"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="0,4"/>
-                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ProfileEnabled}" VerticalAlignment="Center" Margin="0,4"/>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Margin="0,0,0,4">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="2">
+                                    <CheckBox IsChecked="{Binding Enabled}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding Destinations.Count, StringFormat=' ({0} destination(s))'}" Foreground="Gray" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="0,4"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ProfileDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" Padding="4"/>
+                    <!-- Item Action Buttons -->
+                    <WrapPanel Grid.Row="2" Margin="0,0,0,8">
+                        <Button Content="Add Item" Command="{Binding Path=DataContext.AddItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Padding="8,3" Margin="0,0,4,4"/>
+                        <Button Content="Duplicate" Command="{Binding Path=DataContext.DuplicateItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Padding="8,3" Margin="0,0,4,4"/>
+                        <Button Content="Delete" Command="{Binding Path=DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Padding="8,3" Margin="0,0,4,4"/>
+                        <Button Content="▲" ToolTip="Move Up" Command="{Binding Path=DataContext.MoveItemUpCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Padding="8,3" Margin="0,0,4,4"/>
+                        <Button Content="▼" ToolTip="Move Down" Command="{Binding Path=DataContext.MoveItemDownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Padding="8,3" Margin="0,0,4,4"/>
+                    </WrapPanel>
+
+                    <!-- Selected Item Details: Source & Inline Multiple Destinations -->
+                    <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" DataContext="{Binding SelectedItem}">
+                        <ScrollViewer.Style>
+                            <Style TargetType="ScrollViewer">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ScrollViewer.Style>
+
+                        <StackPanel Margin="0,0,6,0">
+                            <!-- Item Header Info -->
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Item Name:" VerticalAlignment="Center" Margin="0,3"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,3" Padding="4"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="0,3"/>
+                                <CheckBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding Enabled}" VerticalAlignment="Center" Margin="0,3"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Source:" VerticalAlignment="Center" Margin="0,3"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Source, UpdateSourceTrigger=PropertyChanged}" Margin="0,3,6,3" Padding="4"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="Browse..." Command="{Binding Path=DataContext.BrowseSourceFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Padding="10,3" Margin="0,3"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Item Type:" VerticalAlignment="Center" Margin="0,3"/>
+                                <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" SelectedValue="{Binding ItemType}" SelectedValuePath="Tag" Margin="0,3" Padding="4">
+                                    <ComboBoxItem Content="Auto (Detect file or directory)" Tag="{x:Static core:SyncItemType.Auto}"/>
+                                    <ComboBoxItem Content="File (Exact single file)" Tag="{x:Static core:SyncItemType.File}"/>
+                                    <ComboBoxItem Content="Directory (Recursive folder tree)" Tag="{x:Static core:SyncItemType.Directory}"/>
+                                </ComboBox>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Exclusions:" VerticalAlignment="Top" Margin="0,3"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding ExclusionsText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="50" VerticalScrollBarVisibility="Auto" Margin="0,3" Padding="4" ToolTip="One pattern per line (e.g. node_modules, *.tmp, bin/**)"/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Comparison:" VerticalAlignment="Center" Margin="0,3"/>
+                                <ComboBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" SelectedValue="{Binding ComparisonMode}" SelectedValuePath="Tag" Margin="0,3" Padding="4">
+                                    <ComboBoxItem Content="Fast (Length and timestamp tolerance)" Tag="{x:Static core:ComparisonMode.Fast}"/>
+                                    <ComboBoxItem Content="SHA-256 (Cryptographic content hash)" Tag="{x:Static core:ComparisonMode.Sha256}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <!-- Multiple Destinations Management: Inline Browse & Actions on each row -->
+                            <GroupBox Header="Destinations" Padding="6" Margin="0,4,0,0">
+                                <StackPanel>
+                                    <ItemsControl ItemsSource="{Binding Destinations}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBox Grid.Column="0" Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" Padding="4" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <Button Grid.Column="1" Content="Browse..." Command="{Binding Path=DataContext.BrowseDestinationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Padding="8,3" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                    <Button Grid.Column="2" Content="▲" ToolTip="Move Up" Command="{Binding Path=DataContext.MoveDestinationUpCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Padding="6,3" VerticalAlignment="Center" Margin="0,0,2,0"/>
+                                                    <Button Grid.Column="3" Content="▼" ToolTip="Move Down" Command="{Binding Path=DataContext.MoveDestinationDownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Padding="6,3" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                    <Button Grid.Column="4" Content="Remove" ToolTip="Remove Destination" Command="{Binding Path=DataContext.RemoveDestinationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Padding="8,3" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Button Content="+ Add Destination" Command="{Binding Path=DataContext.AddDestinationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Left" Padding="10,3" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
+            </Grid>
+        </Grid>
 
-                <Separator Margin="0,8,0,12"/>
-
-                <TextBlock Text="File Sync Item" FontWeight="Bold" Margin="0,0,0,6"/>
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Item Name:" VerticalAlignment="Center" Margin="0,4"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding ItemName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4" Padding="4"/>
-
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Enabled:" VerticalAlignment="Center" Margin="0,4"/>
-                    <CheckBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding ItemEnabled}" VerticalAlignment="Center" Margin="0,4"/>
-
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Source File:" VerticalAlignment="Center" Margin="0,4"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,8,4" Padding="4"/>
-                    <Button Grid.Row="2" Grid.Column="2" Content="Browse..." Command="{Binding BrowseSourceFileCommand}" Padding="12,4" Margin="0,4"/>
-
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Destination File:" VerticalAlignment="Center" Margin="0,4"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,8,4" Padding="4"/>
-                    <Button Grid.Row="3" Grid.Column="2" Content="Browse..." Command="{Binding BrowseDestinationFileCommand}" Padding="12,4" Margin="0,4"/>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-
+        <!-- Bottom Bar: Status & Save -->
         <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="#33888888" Padding="0,12,0,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Margin="0,0,16,0" Foreground="{Binding StatusColor}"/>
-                <Button Content="Save" Command="{Binding SaveCommand}" Padding="20,6" FontWeight="SemiBold"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,16,0" Foreground="{Binding StatusColor}"/>
+                <Button Grid.Column="1" Content="Save Catalog" Command="{Binding SaveCommand}" Padding="20,6" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
