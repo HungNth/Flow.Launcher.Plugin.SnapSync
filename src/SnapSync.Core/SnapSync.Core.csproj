@@ -7,4 +7,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SnapSync.Core.Tests" />
+  </ItemGroup>
+
 </Project>
