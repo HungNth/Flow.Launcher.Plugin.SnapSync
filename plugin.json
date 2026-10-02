@@ -1,12 +1,12 @@
 {
-  "ID": "E8332E900BD54E2C854DC406B78B1143",
-  "ActionKeyword": "sy",
-  "Name": "SnapSync",
-  "Description": "Flow Launcher plugin for SnapSync",
-  "Author": "SnapSync",
-  "Version": "1.0.0",
-  "Language": "csharp",
-  "Website": "https://github.com/Flow-Launcher/Flow.Launcher",
-  "IcoPath": "Images\\app.png",
-  "ExecuteFileName": "Flow.Launcher.Plugin.SnapSync.dll"
+    "ID": "E8332E900BD54E2C854DC406B78B1143",
+    "ActionKeyword": "sy",
+    "Name": "SnapSync",
+    "Description": "Flow Launcher plugin for SnapSync",
+    "Author": "SnapSync",
+    "Version": "1.0.0",
+    "Language": "csharp",
+    "Website": "https://github.com/HungNth/Flow.Launcher.Plugin.SnapSync",
+    "IcoPath": "Images\\app.png",
+    "ExecuteFileName": "Flow.Launcher.Plugin.SnapSync.dll"
 }
