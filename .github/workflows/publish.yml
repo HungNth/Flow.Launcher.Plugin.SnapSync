@@ -1,0 +1,44 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Run unit tests
+        run: dotnet test --configuration Release
+
+      - name: Publish plugin binaries
+        run: dotnet publish Flow.Launcher.Plugin.SnapSync.csproj -c Release -r win-x64 --no-self-contained -o publish
+
+      - name: Package release archive
+        shell: pwsh
+        run: |
+          # Exclude host-provided assemblies per ADR 0005 to reduce archive size (~25MB -> ~250KB)
+          Remove-Item -Path "publish\Microsoft.Windows.SDK.NET.dll", "publish\Flow.Launcher.Plugin.dll" -Force -ErrorAction SilentlyContinue
+          Compress-Archive -Path "publish\*" -DestinationPath "Flow.Launcher.Plugin.SnapSync.zip" -Force
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Flow.Launcher.Plugin.SnapSync.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
