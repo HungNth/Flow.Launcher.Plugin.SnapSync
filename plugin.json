@@ -4,7 +4,7 @@
     "Name": "SnapSync",
     "Description": "On-demand, one-way file and folder synchronization with safety checks and preview.",
     "Author": "HungNth",
-    "Version": "1.0.0",
+    "Version": "1.0.1",
     "Language": "csharp",
     "Website": "https://github.com/HungNth/Flow.Launcher.Plugin.SnapSync",
     "IcoPath": "Images\\app.png",
