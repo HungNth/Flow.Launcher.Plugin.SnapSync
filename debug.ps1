@@ -12,6 +12,13 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
+# Exclude host-provided assemblies per ADR 0005
+$excludedFiles = @(
+    Join-Path $publishDir "Microsoft.Windows.SDK.NET.dll"
+    Join-Path $publishDir "Flow.Launcher.Plugin.dll"
+)
+Remove-Item -Path $excludedFiles -Force -ErrorAction SilentlyContinue
+
 $appDataFolder = [Environment]::GetFolderPath("ApplicationData")
 $flowLauncherExe = "$env:LOCALAPPDATA\FlowLauncher\Flow.Launcher.exe"
 
