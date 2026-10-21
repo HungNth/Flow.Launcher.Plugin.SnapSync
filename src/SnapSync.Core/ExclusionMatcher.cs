@@ -27,9 +27,10 @@ internal sealed class ExclusionMatcher
             var canonical = trimmed.Replace('\\', '/').Trim('/');
 
             if (string.IsNullOrEmpty(canonical)) continue;
-
-            var exactRegex = new Regex(ConvertGlobToRegex(canonical), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
+            // If pattern contains no slash, match against the filename/segment at any directory level (e.g. *.log matches a/b/app.log)
+            var hasSlash = canonical.Contains('/');
+            var regexPattern = hasSlash ? ConvertGlobToRegex(canonical) : ConvertGlobToRegex(canonical, matchAnywhere: true);
+            var exactRegex = new Regex(regexPattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
             // Build directory-prefix regex for early directory pruning:
             // If pattern is "foo/**", then directory "foo" must match.
             // If pattern is "**/cache/**", then any directory ending in "/cache" or equal to "cache" must match.
@@ -84,9 +85,9 @@ internal sealed class ExclusionMatcher
         return false;
     }
 
-    private static string ConvertGlobToRegex(string pattern)
+    private static string ConvertGlobToRegex(string pattern, bool matchAnywhere = false)
     {
-        var sb = new System.Text.StringBuilder("^");
+        var sb = new System.Text.StringBuilder(matchAnywhere ? @"(?:^|/)" : "^");
         var i = 0;
         var len = pattern.Length;
 

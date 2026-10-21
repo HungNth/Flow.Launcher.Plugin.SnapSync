@@ -148,6 +148,88 @@ public sealed class DirectoryExclusionsTests : IDisposable
     }
 
     [Fact]
+    public async Task SynchronizeAsync_NestedFilesMatchingExclusionPatterns_AreExcludedAcrossAllDirectories()
+    {
+        var srcDir = Path.Combine(_testRoot, "src_nested_excl");
+        var subDir = Path.Combine(srcDir, "sub", "deep");
+        Directory.CreateDirectory(subDir);
+
+        await File.WriteAllTextAsync(Path.Combine(srcDir, "root.json.bak"), "Bak1");
+        await File.WriteAllTextAsync(Path.Combine(srcDir, "root.log"), "Log1");
+        await File.WriteAllTextAsync(Path.Combine(subDir, "nested.json.bak"), "Bak2");
+        await File.WriteAllTextAsync(Path.Combine(subDir, "nested.log"), "Log2");
+        await File.WriteAllTextAsync(Path.Combine(subDir, "keep.txt"), "KeepDeep");
+
+        var dstDir = Path.Combine(_testRoot, "dst_nested_excl");
+
+        var profile = new SyncProfile
+        {
+            Name = "NestedExclProfile",
+            Items =
+            [
+                new SyncItem
+                {
+                    Name = "NestedExclItem",
+                    Source = srcDir,
+                    Destinations = [dstDir],
+                    ItemType = SyncItemType.Directory,
+                    Exclusions = ["*.json.bak", "*.log"]
+                }
+            ]
+        };
+
+        var report = await _engine.SynchronizeAsync(profile);
+
+        Assert.Equal(1, report.CopiedCount);
+        Assert.True(File.Exists(Path.Combine(dstDir, "sub", "deep", "keep.txt")));
+        Assert.False(File.Exists(Path.Combine(dstDir, "root.json.bak")));
+        Assert.False(File.Exists(Path.Combine(dstDir, "root.log")));
+        Assert.False(File.Exists(Path.Combine(dstDir, "sub", "deep", "nested.json.bak")));
+        Assert.False(File.Exists(Path.Combine(dstDir, "sub", "deep", "nested.log")));
+        Assert.Equal(4, report.Entries.Count(e => e.Outcome == EntryOutcome.Excluded));
+    }
+
+    [Fact]
+    public async Task SynchronizeAsync_NestedDirectoryExclusion_PrunesSubtreeToSingleExcludedOutcome()
+    {
+        var srcDir = Path.Combine(_testRoot, "src_nested_dir_excl");
+        var nodeModulesDir = Path.Combine(srcDir, "packages", "client", "node_modules");
+        var deepDir = Path.Combine(nodeModulesDir, "pkg", "lib");
+        Directory.CreateDirectory(deepDir);
+
+        await File.WriteAllTextAsync(Path.Combine(deepDir, "index.js"), "console.log(1);");
+        await File.WriteAllTextAsync(Path.Combine(srcDir, "packages", "client", "app.js"), "console.log(2);");
+
+        var dstDir = Path.Combine(_testRoot, "dst_nested_dir_excl");
+
+        var profile = new SyncProfile
+        {
+            Name = "NestedDirExclProfile",
+            Items =
+            [
+                new SyncItem
+                {
+                    Name = "Item",
+                    Source = srcDir,
+                    Destinations = [dstDir],
+                    ItemType = SyncItemType.Directory,
+                    Exclusions = ["node_modules"]
+                }
+            ]
+        };
+
+        var report = await _engine.SynchronizeAsync(profile);
+
+        Assert.Equal(1, report.CopiedCount);
+        Assert.True(File.Exists(Path.Combine(dstDir, "packages", "client", "app.js")));
+        Assert.False(Directory.Exists(Path.Combine(dstDir, "packages", "client", "node_modules")));
+
+        var excludedEntries = report.Entries.Where(e => e.Outcome == EntryOutcome.Excluded).ToList();
+        Assert.Single(excludedEntries);
+        Assert.EndsWith("node_modules", excludedEntries[0].Source);
+    }
+
+    [Fact]
     public async Task SynchronizeAsync_AutoMode_DetectsFileAndDirectoryCorrectly()
     {
         var srcFile = Path.Combine(_testRoot, "auto_file.txt");

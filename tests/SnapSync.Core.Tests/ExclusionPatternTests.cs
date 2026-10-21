@@ -14,6 +14,8 @@ public sealed class ExclusionPatternTests
     [InlineData("**/cache/**", "cache", true)]
     [InlineData("**/cache/**", "sub/cache", true)]
     [InlineData("**/cache/**", "deep/nested/cache", true)]
+    [InlineData("node_modules", "packages/node_modules", true)]
+    [InlineData("cache", "deep/sub/cache", true)]
     public void IsExcluded_DirectoryPruning_MatchesPrefixes(string pattern, string relativePath, bool isDirectory)
     {
         var matcher = new ExclusionMatcher([pattern]);
@@ -43,5 +45,19 @@ public sealed class ExclusionPatternTests
         Assert.True(matcher.IsExcluded("folder/sub/app.log"));
         Assert.True(matcher.IsExcluded(@"folder\sub\app.log"));
         Assert.True(matcher.IsExcluded("FOLDER/SUB/APP.LOG"));
+    }
+
+    [Theory]
+    [InlineData("*.log", "sub/app.log", true)]
+    [InlineData("*.log", "a/b/c/app.log", true)]
+    [InlineData("*.json.bak", "config/settings.json.bak", true)]
+    [InlineData("*.json.bak", "app.json.bak", true)]
+    [InlineData("app.log", "sub/app.log", true)]
+    [InlineData("sub/*.log", "sub/app.log", true)]
+    [InlineData("sub/*.log", "other/sub/app.log", false)]
+    public void IsExcluded_PatternWithoutSlash_MatchesAcrossAllSubdirectories(string pattern, string relativePath, bool expected)
+    {
+        var matcher = new ExclusionMatcher([pattern]);
+        Assert.Equal(expected, matcher.IsExcluded(relativePath, isDirectory: false));
     }
 }
