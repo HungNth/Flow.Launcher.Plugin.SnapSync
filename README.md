@@ -1,4 +1,16 @@
+<div align="center">
+
+<img src="Images/app.png" alt="SnapSync Logo" width="100" />
+
 # SnapSync for Flow Launcher
+
+**On-demand, one-way file and folder synchronization plugin with safety checks and dry-run preview.**
+
+[![Platform](<https://img.shields.io/badge/platform-Windows%20(Flow%20Launcher)-blue.svg>)](#requirements)
+[![Target](https://img.shields.io/badge/.NET-9.0--windows-512bd4.svg)](#requirements)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+</div>
 
 SnapSync copies new or changed files from a source to one or more destinations when you run a sync. It leaves source files and unrelated destination files in place.
 
@@ -16,12 +28,12 @@ If SnapSync doesn't appear, [install it manually](#manual-installation).
 2. Create a profile and add a sync item with a source file or folder and at least one destination. Enter the full target path. For example, to copy `D:\Notes` into `E:\Backups\Notes`, set the destination to `E:\Backups\Notes`.
 3. Type `sy <profile-name>` and select the profile. Press `Ctrl+Enter` to preview changes without writing files, then `Enter` to sync. On a disabled profile, `Enter` opens settings.
 
-| In Flow Launcher | What it does |
-| --- | --- |
-| `sy` | List profiles. During a sync or preview, select **Cancel current operation** to stop and get a partial report. |
-| `Shift+Enter` or right-click on a profile | Open the context menu to sync, preview, or edit the profile. |
-| `sy all` | Sync enabled profiles one at a time. To preview, select a profile individually. |
-| `sy :report [filter]` | View the latest sync or preview report. Filter by filename, destination, or outcome, such as `sy :report Copied` or `sy :report .json`. Press `Enter` to copy the destination path, or the source path if there is no destination. |
+| In Flow Launcher                          | What it does                                                                                                                                                                                                                       |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sy`                                      | List profiles. During a sync or preview, select **Cancel current operation** to stop and get a partial report.                                                                                                                     |
+| `Shift+Enter` or right-click on a profile | Open the context menu to sync, preview, or edit the profile.                                                                                                                                                                       |
+| `sy all`                                  | Sync enabled profiles one at a time. To preview, select a profile individually.                                                                                                                                                    |
+| `sy :report [filter]`                     | View the latest sync or preview report. Filter by filename, destination, or outcome, such as `sy :report Copied` or `sy :report .json`. Press `Enter` to copy the destination path, or the source path if there is no destination. |
 
 ## Profile options
 
